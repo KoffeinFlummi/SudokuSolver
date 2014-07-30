@@ -48,7 +48,6 @@ def findFreeFilename(ext):
 
 def debugImage(img, name):
   """ Shows an image for debugging. """
-  global debug
   if not debug:
     return None
 
@@ -61,15 +60,12 @@ def printSudoku(su):
   """ Prints a sudoku thingy nicely. """
   print "+-------+-------+-------+"
   for i in range(9):
-    string = "| "+str(su[i][0])+" "+str(su[i][1])+" "+str(su[i][2])+" | "+str(su[i][3])+" "+str(su[i][4])+" "+str(su[i][5])+" | "+str(su[i][6])+" "+str(su[i][7])+" "+str(su[i][8])+" |"
-    print string.replace("0", " ")
-    if i in [2,5,8]:
+    print "| {} {} {} | {} {} {} | {} {} {} |".format(*su[i]).replace("0"," ")
+    if (i+1) % 3 == 0:
       print "+-------+-------+-------+"
 
 def projectImage(img):
   """ Compensates for perspective by finding the outline and making the sudoku a square again. """
-  global debug
-
   # Grayscale image for easier processing
   gray = cvtColor(img, COLOR_BGR2GRAY)
   canny = Canny(gray, 50, 200)
@@ -82,7 +78,7 @@ def projectImage(img):
   # Filter contours for things that might be squares
   squares = []
   for contour in contours:
-    contour = approxPolyDP(contour, 0.02*arcLength(contour, True), True)
+    contour = approxPolyDP(contour, 0.02 * arcLength(contour, True), True)
     if len(contour) == 4 and isContourConvex(contour):
       squares.append(contour)
 
@@ -111,8 +107,6 @@ def projectImage(img):
 
 def extractSudoku(img):
   """ Extracts the actual numbers from the image using tesseract. """
-  global debug
-
   sudoku = []
   for i in range(9):
     sudoku_temp = []
@@ -175,14 +169,15 @@ def isValidSolution(sudoku):
 
 def same_row(sudoku, i, j):
   return sudoku[i]
+
 def same_column(sudoku, i, j):
   return [row[j] for row in sudoku]
+
 def same_cluster(sudoku, i, j):
   return sudoku[i//3*3][j//3*3:j//3*3+3] + sudoku[i//3*3+1][j//3*3:j//3*3+3] + sudoku[i//3*3+2][j//3*3:j//3*3+3]
+
 def solveSudoku(sudoku, toplevel=True):
   """ Solves the given sudoku with a simple backtrack; nothing fancy. """
-  global debug
-
   solutions = []
   for i in range(9):
     for j in range(9):
