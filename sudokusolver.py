@@ -212,7 +212,13 @@ def main():
   if len(sys.argv) < 2:
     print "Please supply a path to an image file as an argument."
     sys.exit(1)
-  img = imread(sys.argv[1], 1)
+
+  try:
+    img = imread(sys.argv[1], 1)
+    assert(img != None)
+  except:
+    print "Could not open image. Please make sure that the file you specified exists and is a valid image file."
+    sys.exit(1)
 
   # Resize the image to a more appropriate size
   if img.shape[0] > img.shape[1]:
